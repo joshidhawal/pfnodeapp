@@ -1,24 +1,24 @@
 import express from "express";
-import { getUsers } from "./users.js";
 
 const app: express.Application = express();
 const PORT: number = 8000;
 
 // Handling '/' Request
-app.get('/', (_req, _res) => {
-    let serverResponse = getUsers().then(
-        (serverResponse) => {
-            console.log("Logging in app.ts : " + serverResponse);
-            _res.send(serverResponse);
-        }, (serverResponse) => {
-            console.log("Logging in app.ts : " + serverResponse);
-            _res.send(serverResponse);
-        }
-    );
+// app.get('/', (_req, _res) => {
+//     let serverResponse = getUsers().then(
+//         (serverResponse) => {
+//             console.log("Logging in app.ts : " + serverResponse);
+//             _res.send(serverResponse);
+//         }, (serverResponse) => {
+//             console.log("Logging in app.ts : " + serverResponse);
+//             _res.send(serverResponse);
+//         }
+//     );
 
-});
+// });
 
 app.listen(PORT, () => {
-    console.log("Server is Successfully Running, and App is listening on port " + PORT)
-}
-);
+  console.log(
+    "Server is Successfully Running, and App is listening on port " + PORT
+  );
+});

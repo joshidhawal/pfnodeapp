@@ -7,7 +7,10 @@
     "dev": "nodemon -e ts --exec \"tsc -p . && node dist/app.js\"",
     "start": "node dist/app.js",
     "tstranspile": "tsc --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "schema-check": "typeorm schema:log -d dist/data-source.js",
+    "schema-build-check": "npm run build && npm run typeorm-schema-check"
   },
   "keywords": [],
   "author": "Dhawal Joshi",
