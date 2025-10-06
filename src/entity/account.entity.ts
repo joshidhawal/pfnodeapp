@@ -1,15 +1,10 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from "typeorm";
+import { Column, Entity, Unique } from "typeorm";
 import { BaseEntity } from "./base.entity.js";
 
 @Entity("accounts")
+@Unique(["accountId"])
 export class Account extends BaseEntity {
-  @PrimaryGeneratedColumn("uuid")
+  @Column({ length: 100 })
   accountId!: string;
 
   @Column({ length: 10 })

@@ -1,19 +1,12 @@
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, Unique } from "typeorm";
 import { Account } from "./account.entity.js";
+import { BaseEntity } from "./base.entity.js";
 import { User } from "./user.entity.js";
 
 @Entity("transaction")
+@Unique(["transactionId"])
 export class Transaction extends BaseEntity {
-  @PrimaryGeneratedColumn("uuid")
+  @Column({ length: 100 })
   transactionId!: string;
 
   @ManyToOne(() => User)

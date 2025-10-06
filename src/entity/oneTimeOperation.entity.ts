@@ -3,9 +3,9 @@ import { Account } from "./account.entity.js";
 import { BaseEntity } from "./base.entity.js";
 import { User } from "./user.entity.js";
 
-@Entity("operations")
+@Entity("onetimeoperation")
 @Unique(["operationId"])
-export class Operations extends BaseEntity {
+export class OneTimeOperation extends BaseEntity {
   @Column({ length: 100 })
   operationId!: string;
 
@@ -24,17 +24,5 @@ export class Operations extends BaseEntity {
   dataType!: string;
 
   @Column("decimal", { precision: 20, scale: 4 })
-  operatingAmount!: Number;
-
-  @Column("decimal", { precision: 3, scale: 0 })
-  frequency!: Number;
-
-  @Column({ type: "timestamptz" })
-  startDate!: Date;
-
-  @Column({ type: "timestamptz" })
-  endDate!: Date;
-
-  @Column({ length: 1 })
-  status!: string;
+  operatingAmount!: number;
 }

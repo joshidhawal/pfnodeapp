@@ -1,25 +1,21 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, Entity, Unique } from "typeorm";
 import { BaseEntity } from "./base.entity.js";
 
-@Entity('users')
+@Entity("users")
+@Unique(["userId"])
 export class User extends BaseEntity {
-    @PrimaryGeneratedColumn('uuid')
-    userId!: string;
+  @Column({ length: 100 })
+  userId!: string;
 
-    @Column({ length: 100 })
-    firstName!: string;
+  @Column({ length: 100 })
+  firstName!: string;
 
-    @Column({ length: 100 })
-    lastName!: string;
+  @Column({ length: 100 })
+  lastName!: string;
 
-    @CreateDateColumn({ type: 'timestamp' })
-    dateCreated!: Date;
+  @Column({ length: 100 })
+  email!: string;
 
-    @UpdateDateColumn({ type: 'timestamp' })
-    dateModified!: Date;
-
-    @Column({ length: 1 })
-    status!: string;
-
+  @Column({ length: 1 })
+  status!: string;
 }
-

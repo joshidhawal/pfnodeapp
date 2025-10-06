@@ -4,9 +4,10 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon -e ts --exec \"tsc -p . && node dist/app.js\"",
+    "dev": "npm run start",
+    "devBuild": "nodemon -e ts --exec \"tsc -p . && node dist/app.js\"",
     "start": "node dist/app.js",
-    "tstranspile": "tsc --watch",
+    "tsWatch": "tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "schema-check": "typeorm schema:log -d dist/data-source.js",

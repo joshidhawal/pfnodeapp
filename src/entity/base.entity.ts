@@ -1,10 +1,4 @@
-import {
-  CreateDateColumn,
-  Generated,
-  PrimaryColumn,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from "typeorm";
+import { CreateDateColumn, PrimaryColumn, UpdateDateColumn } from "typeorm";
 
 export abstract class BaseEntity {
   @PrimaryColumn({ type: "bigint", default: () => "nextval('nextid')" }) // use bigint for large range
