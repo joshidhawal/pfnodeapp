@@ -1,7 +1,18 @@
 import express from "express";
+import cors from "cors";
+import errorHandler from "./middlewares/error.middleware.js";
+import { config } from "./config/env.js";
 
 const app: express.Application = express();
 const PORT: number = 8000;
+
+console.table(config);
+
+app.use(cors());
+app.use(express.json());
+
+// Routes
+// app.use("/api/users", userRoutes);
 
 // Handling '/' Request
 // app.get('/', (_req, _res) => {
@@ -16,6 +27,9 @@ const PORT: number = 8000;
 //     );
 
 // });
+
+// Error handler
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(

@@ -4,10 +4,11 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "dev": "npm run start",
-    "devBuild": "nodemon -e ts --exec \"tsc -p . && node dist/app.js\"",
+    "dev": "set NODE_ENV=development&& nodemon -e ts --exec \"rm -rf dist/* && tsc -p . && npm run start\"",
     "start": "node dist/app.js",
+    "prod": "set NODE_ENV=production&& npm run start",
     "tsWatch": "tsc --watch",
+    "tsBuild": "rm -rf dist/* && tsc -p .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "schema-check": "typeorm schema:log -d dist/data-source.js",
@@ -25,6 +26,8 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.0.1",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",
