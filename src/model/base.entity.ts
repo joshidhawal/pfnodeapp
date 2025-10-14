@@ -10,10 +10,10 @@ export abstract class BaseEntity {
   // @Generated('sequence', { sequenceName: 'nextid' }) // temporarily commenting due to typescript types error in strict environment.
   id!: string;
 
-  @CreateDateColumn({ type: "timestamptz" })
+  @CreateDateColumn({ type: "timestamp" })
   dateCreated!: Date;
 
-  @UpdateDateColumn({ type: "timestamptz" })
+  @UpdateDateColumn({ type: "timestamp" })
   dateModified!: Date;
 
   @Column({ length: 100 })
