@@ -13,11 +13,11 @@ export class Transaction extends BaseEntity {
   transactionDate!: Date;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: "userId" })
+  @JoinColumn({ name: "userId", referencedColumnName: "userId" })
   userId!: string;
 
   @ManyToOne(() => Account)
-  @JoinColumn({ name: "accountId" })
+  @JoinColumn({ name: "accountId", referencedColumnName: "accountId" })
   accountId!: string;
 
   @Column("decimal", { precision: 20, scale: 4 })

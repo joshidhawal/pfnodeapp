@@ -10,11 +10,11 @@ export class AuditValidations extends BaseEntity {
   auditId!: string;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: "userId" })
+  @JoinColumn({ name: "userId", referencedColumnName: "userId" })
   userId!: string;
 
   @ManyToOne(() => Account)
-  @JoinColumn({ name: "accountId" })
+  @JoinColumn({ name: "accountId", referencedColumnName: "accountId" })
   accountId!: string;
 
   @Column("decimal", { precision: 1, scale: 0 })

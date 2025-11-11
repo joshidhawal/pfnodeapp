@@ -10,11 +10,11 @@ export class OneTimeOperation extends BaseEntity {
   operationId!: string;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: "userId" })
+  @JoinColumn({ name: "userId", referencedColumnName: "userId" })
   userId!: string;
 
   @ManyToOne(() => Account)
-  @JoinColumn({ name: "accountId" })
+  @JoinColumn({ name: "accountId", referencedColumnName: "accountId" })
   accountId!: string;
 
   @Column({ length: 10 })

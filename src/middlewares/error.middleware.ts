@@ -1,13 +1,18 @@
 import { Request, Response, NextFunction } from "express";
-
-// Optional: Custom error class
-class AppError extends Error {
-  statusCode: number;
-  constructor(message: string, statusCode = 500) {
-    super(message);
-    this.statusCode = statusCode;
-  }
-}
+import { AppLogger } from "../services/logger.service.js";
+import { sendResponseJSON } from "../utils/send-res.util.js";
+import {
+  EntityNotFoundError,
+  QueryFailedError,
+  CannotCreateEntityIdMapError,
+  MissingPrimaryColumnError,
+  OptimisticLockVersionMismatchError,
+  TransactionAlreadyStartedError,
+  TransactionNotStartedError,
+  EntityMetadataNotFoundError,
+  TreeRepositoryNotSupportedError,
+} from "typeorm";
+import { getHttpStatusMessage } from "../utils/httpStatuscodes.util.js";
 
 const errorHandler = (
   err: any,
@@ -15,20 +20,30 @@ const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || "Internal Server Error";
+  const logger = AppLogger.getChildLogger("ErrorMiddleware");
+  logger.error({ err });
+  let statusCode = err.statusCode || 500;
 
-  // Optional: Log full error in dev
-  if (process.env.NODE_ENV !== "production") {
-    console.error("[Error Handler]", err);
+  switch (true) {
+    case err instanceof EntityNotFoundError:
+      statusCode = 404;
+      break;
+    case err instanceof QueryFailedError:
+      statusCode = 400;
+      break;
+    case err instanceof OptimisticLockVersionMismatchError:
+      statusCode = 409;
+      break;
   }
 
-  res.status(statusCode).json({
-    success: false,
-    message,
+  const message = getHttpStatusMessage(statusCode);
+
+  const jsonBody = {
+    message: err.message ?? message,
     ...(process.env.NODE_ENV !== "production" && { stack: err.stack }),
-  });
+  };
+
+  sendResponseJSON(res, statusCode, jsonBody);
 };
 
 export default errorHandler;
-export { AppError };

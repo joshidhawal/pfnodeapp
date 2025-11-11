@@ -20,4 +20,21 @@ export const envSchema = z.object({
       message: "DB_PORT must be a positive number",
     }),
   DB_HOST: z.string().nonempty("DB_HOST is required"),
+  LOG_LEVEL: z.string().optional(),
+  SESSION_TIMEOUT: z
+    .string()
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val) && val > 0, {
+      message: "SESSION_TIMEOUT must be a positive number",
+    })
+    .optional(),
+  API_TIMEOUT: z
+    .string()
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val) && val > 0, {
+      message: "API_TIMEOUT must be a positive number",
+    })
+    .optional(),
+  JWT_EXPIRES_IN: z.string().default("1h"),
+  REFRESH_JWT_EXPIRES_IN: z.string().default("1h"),
 });

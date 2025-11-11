@@ -18,7 +18,8 @@ export const AppDataSource = new DataSource({
   database: "pfnode",
   entities: [path.resolve(__dirname, "model", "*.{js,ts}")], // Path to your entity files
   synchronize: true, // Use with caution in production; consider migrations
-  logging: process.env.NODE_ENV == "development" ? true : false, // Set to true for SQL query logging
+  logging: true, // Set to true for SQL query logging
+  // logging: process.env.NODE_ENV == "development" ? true : false, // Set to true for SQL query logging
   migrations: [__dirname + "/migrations/*.{js,ts}"],
   subscribers: [],
   extra: {

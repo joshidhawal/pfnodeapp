@@ -1,25 +1,38 @@
-import { AppDataSource } from "../data-source.js";
 import { Request, Response } from "express";
+import { AppDataSource } from "../data-source.js";
+import { UserEnums } from "../enums/enum.js";
+import { validateRequest } from "../middlewares/validate.middleware.js";
 import { User } from "../model/user.entity.js";
+import { AppLogger } from "../services/logger.service.js";
 import { UserService } from "../services/user.service.js";
-import { sendResponseJSON } from "../utils/createResponseJSON.js";
+import { UserTypes } from "../types/app/user.js";
 import { catchAsync } from "../utils/catchAsync.js";
+import { sendResponseJSON } from "../utils/send-res.util.js";
+import {
+  createUserSchema,
+  deleteUserByIdSchema,
+  getUserByIdSchema,
+  updateUserByIdSchema,
+} from "../validators/user.schema.js";
 
-const userRepository = AppDataSource.getRepository(User);
-const userService = new UserService(userRepository);
+const userService = new UserService();
+const logger = AppLogger.getChildLogger("UserController");
 
 export const createUser = catchAsync(async (req: Request, res: Response) => {
-  const createUserData = {
+  const createUserData = validateRequest(createUserSchema, {
     createdBy: req.user?.userId,
-    modifiedBy: req.user?.userRole,
+    modifiedBy: req.user?.userId,
+    status: UserEnums.USER_NEW,
     ...req.body,
-  };
-  const user = await userService.createUser(createUserData);
+  });
+
+  const user: UserTypes = await userService.createUser(createUserData);
   sendResponseJSON(res, 201, user);
 });
 
 export const getUserById = catchAsync(async (req: Request, res: Response) => {
-  const user = await userService.updateUserById(req.body);
+  const { userId } = validateRequest(getUserByIdSchema, req.params);
+  const user = await userService.getUserById(userId);
   sendResponseJSON(res, 200, user);
 });
 
@@ -30,14 +43,22 @@ export const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 
 export const updateUserById = catchAsync(
   async (req: Request, res: Response) => {
-    const user = await userService.updateUserById(req.body);
+    const updateUserData = validateRequest(updateUserByIdSchema, {
+      modifiedBy: req.user.userId,
+      ...req.body,
+    });
+    const user = await userService.updateUserById(updateUserData);
     sendResponseJSON(res, 200, user);
   }
 );
 
 export const deleteUserById = catchAsync(
   async (req: Request, res: Response) => {
-    const user = await userService.deleteUserById(req.body);
+    const userData = validateRequest(deleteUserByIdSchema, {
+      modifiedby: req.user.userId,
+      ...req.query,
+    });
+    const user = await userService.deleteUserById(userData);
     res.status(201).json(user);
   }
 );

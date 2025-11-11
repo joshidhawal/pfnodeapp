@@ -3,17 +3,19 @@ import fs from "fs";
 import path from "path";
 import { configTypes } from "types/app/env.js";
 import { fileURLToPath } from "url";
+import { AppLogger } from "../services/logger.service.js";
 import { envSchema } from "../validators/env.schema.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const env = process.env.NODE_ENV || "development";
+const logger = AppLogger.getChildLogger("ENV");
 
 function checkIfPathExists(filePath) {
   if (fs.existsSync(filePath)) {
-    console.log("Env File exists:", filePath);
+    logger.info(`Env File exists: ${filePath}`);
   } else {
-    console.error("Env File does NOT exist:", filePath);
+    logger.error(`Env File does NOT exist: ${filePath}`);
   }
 }
 
@@ -31,14 +33,14 @@ switch (env) {
     checkIfPathExists(path.resolve(__dirname, "../../.env.staging"));
     break;
   default:
-    console.error("No matching env file found");
+    logger.error("No matching env file found");
     break;
 }
 
 const parsedEnv = envSchema.safeParse(process.env);
 
 if (!parsedEnv.success) {
-  console.error("Invalid environment variables:", parsedEnv.error.format());
+  logger.error(`Invalid environment variables: ${parsedEnv.error.format()}`);
   process.exit(1);
 }
 
@@ -46,12 +48,17 @@ const config: configTypes = {
   SERVER_PORT: parsedEnv.data.SERVER_PORT,
   SERVER_HOST: parsedEnv.data.SERVER_HOST,
   JWT_SECRET: parsedEnv.data.JWT_SECRET,
+  SESSION_TIMEOUT: parsedEnv.data.SESSION_TIMEOUT,
+  API_TIMEOUT: parsedEnv.data.API_TIMEOUT,
   DB_TYPE: parsedEnv.data.DB_TYPE,
   DB_USER: parsedEnv.data.DB_USER,
   DB_SCHEMA: parsedEnv.data.DB_SCHEMA,
   DB_PASSWORD: parsedEnv.data.DB_PASSWORD,
   DB_PORT: parsedEnv.data.DB_PORT,
   DB_HOST: parsedEnv.data.DB_HOST,
+  LOG_LEVEL: parsedEnv.data.LOG_LEVEL,
+  JWT_EXPIRES_IN: parsedEnv.data.JWT_EXPIRES_IN,
+  REFRESH_JWT_EXPIRES_IN: parsedEnv.data.REFRESH_JWT_EXPIRES_IN,
 };
 
 export default config;

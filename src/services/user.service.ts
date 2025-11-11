@@ -1,48 +1,88 @@
-import { AppError } from "../middlewares/error.middleware.js";
+import { Logger } from "pino";
+import { Not, Repository } from "typeorm";
+import { UserEnums } from "../enums/enum.js";
+import { AppError } from "../utils/error.util.js";
 import { User } from "../model/user.entity.js";
-import { Repository } from "typeorm";
 import { UserTypes } from "../types/app/user.js";
+import { AppLogger } from "./logger.service.js";
+import { AppDataSource } from "../data-source.js";
 
 export class UserService {
-  constructor(private readonly userRepository: Repository<User>) {}
+  private logger: Logger;
+  private userRepository: Repository<User>;
+  constructor() {
+    this.logger = AppLogger.getChildLogger("UserService");
+    this.userRepository = AppDataSource.getRepository(User);
+  }
 
   async createUser(data: Partial<UserTypes>): Promise<UserTypes> {
     try {
       const newUser = this.userRepository.create(data);
-      console.table(newUser);
       return await this.userRepository.save(newUser);
     } catch (error: any) {
-      // PostgreSQL error code for "duplicate key"
-      if (error.code === "23505") {
-        throw new AppError("User already exists", 409); // 409 Conflict
+      switch (error.code) {
+        case "23505":
+          throw new AppError("User already exists", 409, error);
+        default:
+          throw new AppError("Internal Server Error", 500, error);
       }
-
-      // Fallback for other DB errors
-      throw new AppError("Failed to create user", 500);
     }
   }
 
   async getUserById(userId: string): Promise<UserTypes> {
-    return await this.userRepository.findOneBy({ userId });
+    try {
+      return await this.userRepository.findOneBy({
+        userId,
+        status: Not(UserEnums.USER_DELETED),
+      });
+    } catch (error: any) {
+      switch (error.code) {
+        default:
+          throw new AppError("Internal Server Error", 500, error);
+      }
+    }
   }
 
   async getAllUsers(): Promise<UserTypes[]> {
-    return await this.userRepository.find();
+    try {
+      return await this.userRepository.find({
+        where: { status: Not(UserEnums.USER_DELETED) },
+      });
+    } catch (error: any) {
+      switch (error.code) {
+        default:
+          throw new AppError("Internal Server Error", 500, error);
+      }
+    }
   }
 
   async updateUserById(data: Partial<UserTypes>): Promise<UserTypes> {
-    const user = await this.getUserById(data.userId);
-    if (!user) return null;
+    try {
+      const user = await this.getUserById(data.userId);
+      if (!user) return null;
 
-    const updatedUser = Object.assign(user, data);
-    return await this.userRepository.save(updatedUser);
+      // Updating User Status to Modified if New, it won't change D - Deleted Status
+      user.status == UserEnums.USER_NEW
+        ? (user.status = UserEnums.USER_MODIFIED)
+        : user.status;
+
+      const updatedUserData = { ...user, ...data };
+
+      return await this.userRepository.save(updatedUserData);
+    } catch (error: any) {
+      switch (error.code) {
+        default:
+          throw new AppError("Internal Server Error", 500, error);
+      }
+    }
   }
 
-  async deleteUserById(userId: string): Promise<string> {
-    const user = await this.getUserById(userId);
+  async deleteUserById(userData: Partial<UserTypes>): Promise<string> {
+    const user = await this.getUserById(userData.userId);
     if (!user) return null;
-
-    const result = await this.userRepository.delete(userId);
-    return result.affected ? "User deleted" : "User not found";
+    user.status = UserEnums.USER_DELETED;
+    const result = await this.updateUserById(user);
+    if (!result) return null;
+    return `User : ${userData.userId} Successfully Deleted`;
   }
 }

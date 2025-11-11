@@ -1,5 +1,6 @@
-import { Column, Entity, Unique } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, Unique } from "typeorm";
 import { BaseEntity } from "./base.entity.js";
+import { User } from "./user.entity.js";
 
 @Entity("accounts")
 @Unique(["accountId"])
@@ -21,4 +22,11 @@ export class Account extends BaseEntity {
 
   @Column("decimal", { precision: 20, scale: 4 })
   balance!: number;
+
+  @Column({ length: 5 })
+  currency!: string;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: "userId", referencedColumnName: "userId" })
+  userId!: string;
 }

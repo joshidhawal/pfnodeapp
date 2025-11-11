@@ -1,22 +1,35 @@
 import { AuthService } from "../services/auth.service.js";
+import { AppLogger } from "../services/logger.service.js";
+import { sendResponseJSON } from "../utils/send-res.util.js";
 
 const authService = new AuthService();
+const logger = AppLogger.getChildLogger("AuthMiddleware");
 
-export const requireAuth = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  // if (!authHeader || !authHeader.startsWith("Bearer ")) {
-  //   return res
-  //     .status(401)
-  //     .json({ message: "Missing or invalid Authorization header" });
-  // }
-
-  // const token = authHeader.split(" ")[1];
-
+export const requireAuth = async (req, res, next) => {
   try {
-    // const decoded = authService.verifyToken(token);
-    const decoded = { userId: "TESTADMIN", userRole: "TESTADMIN" };
-    req.user = decoded; // Attach user info to the request
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return sendResponseJSON(res, 401, {
+        message: "Missing or invalid Authorization header",
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+    const decoded = authService.verifyToken(token);
+    const userDetails = await authService.getUserSec(decoded["userId"]);
+    logger.info("userdetails");
+    logger.info(userDetails);
+    if (!userDetails) {
+      logger.info("Invalid token, but no error thrown!");
+    }
+    req.user = {
+      userId: userDetails["userId"],
+      isAdmin: userDetails["isAdmin"],
+      ...userDetails["user"],
+    };
+    logger.info("req.user");
+    logger.info(decoded);
     next();
   } catch (err) {
     return res.status(401).json({ message: "Unauthorized: " + err.message });
