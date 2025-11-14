@@ -22,6 +22,7 @@ export const AppDataSource = new DataSource({
   // logging: process.env.NODE_ENV == "development" ? true : false, // Set to true for SQL query logging
   migrations: [__dirname + "/migrations/*.{js,ts}"],
   subscribers: [],
+  maxQueryExecutionTime: 30000,
   extra: {
     max: 10, // Maximum number of connections in the pool
     min: 2, //Minimum number of connections in the pool

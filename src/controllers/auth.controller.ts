@@ -31,9 +31,17 @@ export const login = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const refreshToken = catchAsync(async (req, res) => {
-  const { refreshToken } = req.body;
+  const refreshToken = req.cookies.refreshToken;
   const tokenObject = await authService.refreshTokens(refreshToken);
   if (tokenObject.success) {
+    res.cookie("refreshToken", tokenObject.refreshToken, {
+      httpOnly: true,
+      secure: true,
+      // sameSite: "Strict",
+      // domain: ".example.com", // available across all subdomains of example.com
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+    delete tokenObject.refreshToken;
     sendResponseJSON(res, 201, tokenObject);
   } else {
     sendResponseJSON(res, 401, { message: tokenObject.message });
@@ -60,31 +68,32 @@ export const signup = catchAsync(async (req: Request, res: Response) => {
   sendResponseJSON(res, 201, { message: userAuthStatus });
 });
 
-// export const resetPassword = catchAsync(async (req: Request, res: Response) => {
-//   const updateUserData = validateRequest(resetPasswordSchema, {
-//     modifiedBy: req.user?.userRole,
-//     isAdmin: UserAuthEnums.NOT_ADMIN,
-//     ...req.body,
-//   });
+export const resetPassword = catchAsync(async (req: Request, res: Response) => {
+  const updateUserData = validateRequest(resetPasswordSchema, {
+    modifiedBy: req.user?.userRole,
+    isAdmin: UserAuthEnums.NOT_ADMIN,
+    ...req.body,
+  });
 
-//   const status: boolean = await authService.updateUserSec(updateUserData);
+  const status: boolean = await authService.updateUserAuth(updateUserData);
 
-//   const resString = status
-//     ? "User security details are updated successfully"
-//     : "Failed to Update User Security";
+  const resString = status
+    ? "User security details are updated successfully"
+    : "Failed to Update User Security";
 
-//   sendResponseJSON(res, 201, resString);
-// });
-// export const changeAdminStatus = catchAsync(
-//   async (req: Request, res: Response) => {
-//     const createUserData = validateRequest(signupSchema, {
-//       createdBy: req.user?.userId,
-//       modifiedBy: req.user?.userRole,
-//       isAdmin: UserAuthEnums.NOT_ADMIN,
-//       ...req.body,
-//     });
+  sendResponseJSON(res, 201, { resString });
+});
 
-//     const user: AuthTypes = await authService.createUserSec(createUserData);
-//     sendResponseJSON(res, 201, user);
-//   }
-// );
+export const changeAdminStatus = catchAsync(
+  async (req: Request, res: Response) => {
+    const createUserData = validateRequest(signupSchema, {
+      createdBy: req.user?.userId,
+      modifiedBy: req.user?.userRole,
+      isAdmin: UserAuthEnums.NOT_ADMIN,
+      ...req.body,
+    });
+
+    const status: boolean = await authService.updateUserAuth(createUserData);
+    sendResponseJSON(res, 201, { status });
+  }
+);
