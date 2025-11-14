@@ -16,6 +16,14 @@ export const login = catchAsync(async (req: Request, res: Response) => {
   const { userId, password }: Partial<AuthTypes> = req.body;
   const tokenObject = await authService.login({ userId, password });
   if (tokenObject.success) {
+    res.cookie("refreshToken", tokenObject.refreshToken, {
+      httpOnly: true,
+      secure: true,
+      // sameSite: "Strict",
+      // domain: ".example.com", // available across all subdomains of example.com
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+    delete tokenObject.refreshToken;
     sendResponseJSON(res, 201, tokenObject);
   } else {
     sendResponseJSON(res, 401, { message: tokenObject.message });
