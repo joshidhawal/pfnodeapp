@@ -18,18 +18,15 @@ export const requireAuth = async (req, res, next) => {
     const token = authHeader.split(" ")[1];
     const decoded = authService.verifyToken(token);
     const userDetails = await authService.getUserSec(decoded["userId"]);
-    logger.info("userdetails");
-    logger.info(userDetails);
-    if (!userDetails) {
-      logger.info("Invalid token, but no error thrown!");
-    }
+    // logger.info("userdetails");
+    // logger.info(userDetails);
     req.user = {
       userId: userDetails["userId"],
       isAdmin: userDetails["isAdmin"],
       ...userDetails["user"],
     };
-    logger.info("req.user");
-    logger.info(decoded);
+    // logger.info("req.user");
+    // logger.info(decoded);
     next();
   } catch (err) {
     return res.status(401).json({ message: "Unauthorized: " + err.message });

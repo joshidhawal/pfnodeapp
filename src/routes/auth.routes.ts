@@ -14,6 +14,6 @@ router.post("/signup", signup);
 router.post("/login", login);
 router.post("/refreshtoken", refreshToken);
 router.post("/resetpassword", resetPassword);
-router.post("/resetpassword", requireAuth, changeAdminStatus);
+router.post("/changeAdminStatus", requireAuth, changeAdminStatus);
 
 export default router;
