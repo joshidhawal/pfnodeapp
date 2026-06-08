@@ -1,12 +1,13 @@
 import { Column, Entity, JoinColumn, OneToOne, RelationId } from "typeorm";
+
 import { BaseEntity } from "./base.entity.js";
 import { User } from "./user.entity.js";
 import { UserAuthEnums } from "../enums/enum.js";
 
 @Entity("userauth")
 export class UserAuth extends BaseEntity {
-  @OneToOne(() => User)
-  @JoinColumn({ name: "user", referencedColumnName: "userId" })
+  @OneToOne(() => User, { nullable: false })
+  @JoinColumn({ name: "userId", referencedColumnName: "userId" })
   user!: User;
 
   @RelationId((auth: UserAuth) => auth.user)

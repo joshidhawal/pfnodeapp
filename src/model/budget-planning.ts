@@ -11,32 +11,35 @@ import { Account } from "./account.entity.js";
 import { BaseEntity } from "./base.entity.js";
 import { User } from "./user.entity.js";
 
-@Entity("one_time_operation")
-@Unique(["operationId"])
-export class OneTimeOperation extends BaseEntity {
+@Entity("budgetplanning")
+@Unique(["budgetId"])
+export class BudgetPlanning extends BaseEntity {
   @Column({ length: 100 })
-  operationId!: string;
+  budgetId!: string;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: "userId", referencedColumnName: "userId" })
   user!: User;
 
-  @RelationId((otp: OneTimeOperation) => otp.user)
+  @RelationId((budget: BudgetPlanning) => budget.user)
   userId!: string;
 
   @ManyToOne(() => Account)
   @JoinColumn({ name: "accountId", referencedColumnName: "accountId" })
   account!: Account;
 
-  @RelationId((otp: OneTimeOperation) => otp.account)
+  @RelationId((budget: BudgetPlanning) => budget.account)
   accountId!: string;
 
-  @Column({ length: 10 })
-  operationType!: string;
+  @Column({ type: "timestamptz" })
+  startDate!: Date;
 
-  @Column({ length: 10 })
-  dataType!: string;
+  @Column({ type: "timestamptz" })
+  endDate!: Date;
 
   @Column("decimal", { precision: 20, scale: 4 })
-  operatingAmount!: number;
+  amount!: number;
+
+  @Column({ length: 1 })
+  status!: string;
 }

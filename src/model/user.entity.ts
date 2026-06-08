@@ -1,4 +1,5 @@
 import { Column, Entity, Unique } from "typeorm";
+
 import { BaseEntity } from "./base.entity.js";
 
 @Entity("users")

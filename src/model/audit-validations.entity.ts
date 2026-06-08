@@ -1,7 +1,15 @@
-import { Column, Entity, JoinColumn, ManyToOne, Unique } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  RelationId,
+  Unique,
+} from "typeorm";
+
 import { Account } from "./account.entity.js";
-import { User } from "./user.entity.js";
 import { BaseEntity } from "./base.entity.js";
+import { User } from "./user.entity.js";
 
 @Entity("auditvalidations")
 @Unique(["auditId"])
@@ -11,10 +19,16 @@ export class AuditValidations extends BaseEntity {
 
   @ManyToOne(() => User)
   @JoinColumn({ name: "userId", referencedColumnName: "userId" })
+  user!: User;
+
+  @RelationId((audit: AuditValidations) => audit.user)
   userId!: string;
 
   @ManyToOne(() => Account)
   @JoinColumn({ name: "accountId", referencedColumnName: "accountId" })
+  account!: Account;
+
+  @RelationId((audit: AuditValidations) => audit.account)
   accountId!: string;
 
   @Column("decimal", { precision: 1, scale: 0 })

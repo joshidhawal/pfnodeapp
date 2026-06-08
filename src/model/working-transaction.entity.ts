@@ -1,4 +1,12 @@
-import { Column, Entity, JoinColumn, ManyToOne, Unique } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  RelationId,
+  Unique,
+} from "typeorm";
+
 import { Account } from "./account.entity.js";
 import { BaseEntity } from "./base.entity.js";
 import { User } from "./user.entity.js";
@@ -14,10 +22,16 @@ export class WorkingTransaction extends BaseEntity {
 
   @ManyToOne(() => User)
   @JoinColumn({ name: "userId", referencedColumnName: "userId" })
+  user!: User;
+
+  @RelationId((wt: WorkingTransaction) => wt.user)
   userId!: string;
 
   @ManyToOne(() => Account)
   @JoinColumn({ name: "accountId", referencedColumnName: "accountId" })
+  account!: Account;
+
+  @RelationId((wt: WorkingTransaction) => wt.account)
   accountId!: string;
 
   @Column("decimal", { precision: 20, scale: 4 })

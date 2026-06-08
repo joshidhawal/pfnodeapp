@@ -1,4 +1,12 @@
-import { Column, Entity, JoinColumn, ManyToOne, Unique } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  RelationId,
+  Unique,
+} from "typeorm";
+
 import { BaseEntity } from "./base.entity.js";
 import { User } from "./user.entity.js";
 
@@ -28,5 +36,8 @@ export class Account extends BaseEntity {
 
   @ManyToOne(() => User)
   @JoinColumn({ name: "userId", referencedColumnName: "userId" })
+  user!: User;
+
+  @RelationId((account: Account) => account.user)
   userId!: string;
 }
