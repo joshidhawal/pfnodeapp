@@ -18,25 +18,27 @@
     "outDir": "./dist/",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    // "allowImportingTsExtensions": true,
+    // "emitDeclarationOnly": true,
+    "declaration": true,
+    "strict": true, // Enables all strict type-checking options
+    "noImplicitAny": true, // Disallow 'any' type usage without explicit annotation
+    "strictNullChecks": true, // Ensure null and undefined are not assigned to non-nullable types
+    "strictFunctionTypes": true, // Enforces stricter checking of function types
+    "strictPropertyInitialization": true, // Ensure class properties are initialized in the constructor
+    "noImplicitThis": true, // Raise error on 'this' expressions with an implied 'any' type
+    "alwaysStrict": true, // Parse in strict mode and emit "use strict" for each file
+    "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased references to the same file
+    "noUnusedLocals": true, // Report errors on unused local variables
+    "noUnusedParameters": true, // Report errors on unused parameters
+    "exactOptionalPropertyTypes": true, // Require optional properties to be explicitly defined as undefined
+    "noFallthroughCasesInSwitch": true, // Report errors for fallthrough cases in switch statements
+    "noImplicitOverride": true, // Ensure methods overriding base class methods are explicitly marked with 'override'
+    "noPropertyAccessFromIndexSignature": true, // Enforce index signatures for property access
+    "noUncheckedIndexedAccess": true // Add 'undefined' to the type of indexed access
   },
-  "resolveJsonModule": true,
-  "allowImportingTsExtensions": true,
   "include": ["./src/**/*.ts"],
-  "exclude": ["./node_modules"],
-  "strict": true, // Enables all strict type-checking options
-  "noImplicitAny": true, // Disallow 'any' type usage without explicit annotation
-  "strictNullChecks": true, // Ensure null and undefined are not assigned to non-nullable types
-  "strictFunctionTypes": true, // Enforces stricter checking of function types
-  "strictPropertyInitialization": true, // Ensure class properties are initialized in the constructor
-  "noImplicitThis": true, // Raise error on 'this' expressions with an implied 'any' type
-  "alwaysStrict": true, // Parse in strict mode and emit "use strict" for each file
-  "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased references to the same file
-  "noUnusedLocals": true, // Report errors on unused local variables
-  "noUnusedParameters": true, // Report errors on unused parameters
-  "exactOptionalPropertyTypes": true, // Require optional properties to be explicitly defined as undefined
-  "noFallthroughCasesInSwitch": true, // Report errors for fallthrough cases in switch statements
-  "noImplicitOverride": true, // Ensure methods overriding base class methods are explicitly marked with 'override'
-  "noPropertyAccessFromIndexSignature": true, // Enforce index signatures for property access
-  "noUncheckedIndexedAccess": true // Add 'undefined' to the type of indexed access
+  "exclude": ["./node_modules"]
 }
