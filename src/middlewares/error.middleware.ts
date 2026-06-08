@@ -1,28 +1,35 @@
 import { Request, Response, NextFunction } from "express";
-import { AppLogger } from "../services/logger.service.js";
-import { sendResponseJSON } from "../utils/send-res.util.js";
 import {
   EntityNotFoundError,
   QueryFailedError,
-  CannotCreateEntityIdMapError,
-  MissingPrimaryColumnError,
   OptimisticLockVersionMismatchError,
-  TransactionAlreadyStartedError,
-  TransactionNotStartedError,
-  EntityMetadataNotFoundError,
-  TreeRepositoryNotSupportedError,
 } from "typeorm";
+
+import { AppLogger } from "../services/logger.service.js";
+import { AppError } from "../utils/error.util.js";
 import { getHttpStatusMessage } from "../utils/httpStatuscodes.util.js";
+import { sendResponseJSON } from "../utils/send-res.util.js";
 
 const errorHandler = (
-  err: any,
-  req: Request,
+  err: unknown,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction,
 ) => {
   const logger = AppLogger.getChildLogger("ErrorMiddleware");
   logger.error({ err });
-  let statusCode = err.statusCode || 500;
+  let statusCode = 500;
+  let message = getHttpStatusMessage(statusCode);
+  let stack;
+
+  if (err instanceof AppError) {
+    statusCode = err.statusCode;
+  }
+
+  if (err instanceof Error) {
+    message = err.message;
+    stack = err.stack;
+  }
 
   switch (true) {
     case err instanceof EntityNotFoundError:
@@ -36,11 +43,9 @@ const errorHandler = (
       break;
   }
 
-  const message = getHttpStatusMessage(statusCode);
-
   const jsonBody = {
-    message: err.message ?? message,
-    ...(process.env.NODE_ENV !== "production" && { stack: err.stack }),
+    message: message,
+    ...(process.env["NODE_ENV"] !== "production" && { stack }),
   };
 
   sendResponseJSON(res, statusCode, jsonBody);

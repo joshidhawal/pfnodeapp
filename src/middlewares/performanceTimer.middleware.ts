@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+
 import { AppLogger } from "../services/logger.service.js";
 
 export function perfLogger(req: Request, res: Response, next: NextFunction) {

@@ -1,12 +1,13 @@
 import z from "zod";
-import { UserEnums } from "../enums/enum.js";
+
+import { RecordStatus } from "../enums/enum.js";
 
 export const createUserSchema = z.object({
   userId: z.string().nonempty("User ID is required"),
   firstName: z.string().nonempty("First Name is required"),
   lastName: z.string().nonempty("Last Name is required"),
   email: z.string().nonempty("Email is required"),
-  status: z.string().default(UserEnums.USER_NEW),
+  status: z.string().default(RecordStatus.NEW),
   createdBy: z.string().nonempty("Created By is required"),
   modifiedBy: z.string().nonempty("Modified By is required"),
 });

@@ -1,4 +1,5 @@
 import { ZodType } from "zod";
+
 import { AppError } from "../utils/error.util.js";
 
 export function validateRequest<T>(schema: ZodType<T>, data: unknown): T {

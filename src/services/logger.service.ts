@@ -7,7 +7,7 @@ export class AppLogger {
   private static createLogger(): Logger {
     if (!this.instance) {
       this.instance = pino({
-        level: process.env.LOG_LEVEL || "info",
+        level: process.env["LOG_LEVEL"] || "info",
         transport: {
           targets: [
             {

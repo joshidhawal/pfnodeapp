@@ -1,8 +1,10 @@
 // src/data-source.ts
 import path from "path";
+
 import "reflect-metadata";
-import { DataSource } from "typeorm";
 import { fileURLToPath } from "url";
+
+import { DataSource } from "typeorm";
 
 // Define __filename and __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);

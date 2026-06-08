@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
+
 import { UserAuthEnums } from "../enums/enum.js";
 import { validateRequest } from "../middlewares/validate.middleware.js";
 import { AuthService } from "../services/auth.service.js";
-import { AuthTypes } from "../types/app/auth.js";
+import { UserLoginType } from "../types/app/types.js";
 import { catchAsync } from "../utils/catchAsync.js";
 import { sendResponseJSON } from "../utils/send-res.util.js";
 import {
@@ -13,7 +14,8 @@ import { createUserSchema } from "../validators/user.schema.js";
 const authService = new AuthService();
 
 export const login = catchAsync(async (req: Request, res: Response) => {
-  const { userId, password }: Partial<AuthTypes> = req.body;
+  const { userId, password }: UserLoginType = req.body;
+
   const tokenObject = await authService.login({ userId, password });
   if (tokenObject.success) {
     res.cookie("refreshToken", tokenObject.refreshToken, {
@@ -31,7 +33,7 @@ export const login = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const refreshToken = catchAsync(async (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
+  const refreshToken = req.cookies.refreshToken as string;
   const tokenObject = await authService.refreshTokens(refreshToken);
   if (tokenObject.success) {
     res.cookie("refreshToken", tokenObject.refreshToken, {
@@ -63,25 +65,26 @@ export const signup = catchAsync(async (req: Request, res: Response) => {
 
   const userAuthStatus: string = await authService.signup(
     createUserAuthData,
-    createUserData
+    createUserData,
   );
-  sendResponseJSON(res, 201, { message: userAuthStatus });
+
+  sendResponseJSON(res, 201, { success: true, message: userAuthStatus });
 });
 
 export const resetPassword = catchAsync(async (req: Request, res: Response) => {
   const updateUserData = validateRequest(resetPasswordSchema, {
-    modifiedBy: req.user?.userRole,
+    modifiedBy: req.body.userId,
     isAdmin: UserAuthEnums.NOT_ADMIN,
     ...req.body,
   });
 
-  const status: boolean = await authService.updateUserAuth(updateUserData);
+  const success: boolean = await authService.updateUserAuth(updateUserData);
 
-  const resString = status
+  const message = success
     ? "User security details are updated successfully"
     : "Failed to Update User Security";
 
-  sendResponseJSON(res, 201, { resString });
+  sendResponseJSON(res, 201, { success, message });
 });
 
 export const changeAdminStatus = catchAsync(
@@ -95,5 +98,5 @@ export const changeAdminStatus = catchAsync(
 
     const status: boolean = await authService.updateUserAuth(createUserData);
     sendResponseJSON(res, 201, { status });
-  }
+  },
 );

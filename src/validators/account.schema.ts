@@ -1,14 +1,18 @@
 import z from "zod";
-import { AccountEnums } from "../enums/enum.js";
 
-export const createAccountSchema = z.object({
+import { RecordStatus } from "../enums/enum.js";
+
+const accountSchema = z.object({
   accountId: z.string().nonempty("Account ID is required"),
   accountType: z.string().nonempty("Account Type is required"),
   accountSubtype: z.string().nonempty("Account Sub Type is required"),
   accountName: z.string().nonempty("Account Name is required"),
-  status: z.string().default(AccountEnums.ACCOUNT_NEW),
+  status: z.string().default(RecordStatus.NEW),
   balance: z
     .string()
+    .regex(/^\d+(\.\d{1,4})?$/, {
+      message: "Balance must have up to 4 decimal places",
+    })
     .transform((val) => parseFloat(val))
     .refine((val) => !isNaN(val), {
       message: "Account Balance must be a valid amount",
@@ -20,48 +24,49 @@ export const createAccountSchema = z.object({
   modifiedBy: z.string().nonempty("Modified By is required"),
 });
 
-export const getAllAccountsSchema = z.object({
-  userId: z.string().nonempty("User ID is required"),
+export const createAccountSchema = accountSchema.pick({
+  accountId: true,
+  accountType: true,
+  accountSubtype: true,
+  accountName: true,
+  status: true,
+  balance: true,
+  userId: true,
+  currency: true,
+  createdBy: true,
+  modifiedBy: true,
 });
 
-export const getAccountByIdSchema = z.object({
-  accountId: z.string().nonempty("Account ID is required"),
-  userId: z.string().nonempty("User ID is required"),
+export const getAllAccountsSchema = accountSchema.pick({
+  userId: true,
 });
 
-export const deleteAccountByIdSchema = z.object({
-  accountId: z.string().nonempty("Account ID is required"),
-  userId: z.string().nonempty("User ID is required"),
-  modifiedBy: z.string().nonempty("Modified By is required"),
+export const getAccountByIdSchema = accountSchema.pick({
+  accountId: true,
+  userId: true,
 });
 
-export const updateAccountByIdSchema = z.object({
-  accountId: z.string().nonempty("Account ID is required"),
-  accountType: z.string().optional(),
-  accountSubtype: z.string().optional(),
-  accountName: z.string().optional(),
-  status: z.string().optional(),
-  balance: z
-    .string()
-    .transform((val) => Number(val))
-    .refine((val) => !isNaN(val), {
-      message: "balance must be number",
-    })
-    .optional(),
-  userId: z.string().nonempty("User ID is required"),
-  createdBy: z.string().nonempty("Created By is required"),
-  modifiedBy: z.string().nonempty("Modified By is required"),
+export const deleteAccountByIdSchema = accountSchema.pick({
+  accountId: true,
+  userId: true,
+  modifiedBy: true,
 });
 
-export const updateAccountBalanceSchema = z.object({
-  accountId: z.string().nonempty("Account ID is required"),
-  balance: z
-    .string()
-    .transform((val) => Number(val))
-    .refine((val) => !isNaN(val), {
-      message: "balance must be number",
-    })
-    .optional(),
-  userId: z.string().nonempty("User ID is required"),
-  modifiedBy: z.string().nonempty("Modified By is required"),
+export const updateAccountByIdSchema = accountSchema.pick({
+  accountId: true,
+  accountType: true,
+  accountSubtype: true,
+  accountName: true,
+  status: true,
+  balance: true,
+  userId: true,
+  createdBy: true,
+  modifiedBy: true,
+});
+
+export const updateAccountBalanceSchema = accountSchema.pick({
+  accountId: true,
+  balance: true,
+  userId: true,
+  modifiedBy: true,
 });

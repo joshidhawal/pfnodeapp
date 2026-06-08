@@ -1,4 +1,3 @@
-import { DataSource } from "typeorm";
 import { AppDataSource } from "./data-source.js"; // or wherever your DataSource is
 
 async function testConnection() {

@@ -1,6 +1,7 @@
 // src/logger/httpLogger.ts
-import { pinoHttp } from "pino-http";
 import { randomUUID } from "crypto";
+
+import { pinoHttp } from "pino-http";
 import { AppLogger } from "services/logger.service.js";
 
 const logger = AppLogger.getChildLogger("LoggerMiddleWare");

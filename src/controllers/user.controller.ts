@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
-import { AppDataSource } from "../data-source.js";
-import { UserEnums } from "../enums/enum.js";
+
+import { RecordStatus } from "../enums/enum.js";
 import { validateRequest } from "../middlewares/validate.middleware.js";
-import { User } from "../model/user.entity.js";
 import { AppLogger } from "../services/logger.service.js";
 import { UserService } from "../services/user.service.js";
-import { UserTypes } from "../types/app/user.js";
+import { UserTypes } from "../types/app/types.js";
 import { catchAsync } from "../utils/catchAsync.js";
 import { sendResponseJSON } from "../utils/send-res.util.js";
 import {
@@ -22,10 +21,10 @@ export const createUser = catchAsync(async (req: Request, res: Response) => {
   const createUserData = validateRequest(createUserSchema, {
     createdBy: req.user?.userId,
     modifiedBy: req.user?.userId,
-    status: UserEnums.USER_NEW,
+    status: RecordStatus.NEW,
     ...req.body,
   });
-
+  logger.info(createUserData, "Creating New User");
   const user: UserTypes = await userService.createUser(createUserData);
   sendResponseJSON(res, 201, user);
 });
@@ -36,7 +35,7 @@ export const getUserById = catchAsync(async (req: Request, res: Response) => {
   sendResponseJSON(res, 200, user);
 });
 
-export const getAllUsers = catchAsync(async (req: Request, res: Response) => {
+export const getAllUsers = catchAsync(async (_req: Request, res: Response) => {
   const userArray = await userService.getAllUsers();
   sendResponseJSON(res, 200, userArray);
 });
@@ -49,7 +48,7 @@ export const updateUserById = catchAsync(
     });
     const user = await userService.updateUserById(updateUserData);
     sendResponseJSON(res, 200, user);
-  }
+  },
 );
 
 export const deleteUserById = catchAsync(
@@ -60,5 +59,5 @@ export const deleteUserById = catchAsync(
     });
     const user = await userService.deleteUserById(userData);
     res.status(201).json(user);
-  }
+  },
 );

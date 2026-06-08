@@ -1,12 +1,12 @@
 // Optional: Custom error class
 class AppError extends Error {
   statusCode: number;
-  errorDetails: any;
+  errorDetails: object;
   logLabel?: string;
   constructor(
     message: string,
     statusCode = 500,
-    errorDetails: any = { errorDescription: "An Error has occured" }
+    errorDetails: object = { errorDescription: "An Error has occured" },
   ) {
     super(message);
     this.statusCode = statusCode;
