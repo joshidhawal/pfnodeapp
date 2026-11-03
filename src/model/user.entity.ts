@@ -5,18 +5,18 @@ import { BaseEntity } from "./base.entity.js";
 @Entity("users")
 @Unique(["userId"])
 export class User extends BaseEntity {
-  @Column({ length: 100 })
+  @Column({ name: "user_id", length: 100 })
   userId!: string;
 
-  @Column({ length: 100 })
+  @Column({ name: "first_name", length: 100 })
   firstName!: string;
 
-  @Column({ length: 100 })
+  @Column({ name: "last_name", length: 100 })
   lastName!: string;
 
-  @Column({ length: 100 })
+  @Column({ name: "email", length: 100 })
   email!: string;
 
-  @Column({ length: 1 })
+  @Column({ name: "status", length: 1 })
   status!: string;
 }

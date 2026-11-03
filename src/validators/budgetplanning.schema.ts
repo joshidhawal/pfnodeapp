@@ -6,8 +6,8 @@ const budgetPlanningMainSchema = z.object({
   budgetId: z.string().nonempty("Budget ID is required"),
   userId: z.string().nonempty("User ID is required"),
   accountId: z.string().nonempty("Account ID is required"),
-  startDate: z.date("Start Date is required."),
-  endDate: z.date("End Date is required."),
+  startDate: z.coerce.date("Start Date is required."),
+  endDate: z.coerce.date("End Date is required."),
   amount: z.coerce
     .number()
     .refine((val) => Number.isFinite(val), {
@@ -65,8 +65,11 @@ export const deleteBudgetSchema = budgetPlanningMainSchema.pick({
   budgetId: true,
   userId: true,
   accountId: true,
+  modifiedBy: true,
 });
 
 export const deleteAllBudgetsForUserSchema = budgetPlanningMainSchema.pick({
   userId: true,
+  modifiedBy: true,
+  accountId: true,
 });

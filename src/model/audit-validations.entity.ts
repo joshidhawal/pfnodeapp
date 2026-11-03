@@ -14,32 +14,52 @@ import { User } from "./user.entity.js";
 @Entity("auditvalidations")
 @Unique(["auditId"])
 export class AuditValidations extends BaseEntity {
-  @Column({ length: 100 })
+  @Column({ name: "audit_id", length: 100 })
   auditId!: string;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: "userId", referencedColumnName: "userId" })
+  @ManyToOne(() => User, { nullable: false })
+  @JoinColumn({ name: "user_id", referencedColumnName: "userId" })
   user!: User;
 
   @RelationId((audit: AuditValidations) => audit.user)
   userId!: string;
 
-  @ManyToOne(() => Account)
-  @JoinColumn({ name: "accountId", referencedColumnName: "accountId" })
+  @ManyToOne(() => Account, { nullable: false })
+  @JoinColumn({ name: "account_id", referencedColumnName: "accountId" })
   account!: Account;
 
   @RelationId((audit: AuditValidations) => audit.account)
   accountId!: string;
 
-  @Column("decimal", { precision: 1, scale: 0 })
+  @Column("decimal", {
+    name: "validation_type",
+    precision: 1,
+    scale: 0,
+    transformer: {
+      // What goes to the DB (keep as is or stringify)
+      to: (value: number) => value,
+      // What comes out of the DB (automatically parse into a number)
+      from: (value: string) => (value ? parseFloat(value) : 0),
+    },
+  })
   validationType!: number;
 
-  @Column({ default: false })
+  @Column({ name: "is_lax", default: false })
   isLax!: boolean;
 
-  @Column("decimal", { precision: 20, scale: 4 })
+  @Column("decimal", {
+    name: "amount",
+    precision: 20,
+    scale: 4,
+    transformer: {
+      // What goes to the DB (keep as is or stringify)
+      to: (value: number) => value,
+      // What comes out of the DB (automatically parse into a number)
+      from: (value: string) => (value ? parseFloat(value) : 0),
+    },
+  })
   amount!: number;
 
-  @Column({ length: 10 })
+  @Column({ name: "data_type", length: 10 })
   dataType!: string;
 }

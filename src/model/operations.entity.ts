@@ -14,41 +14,61 @@ import { User } from "./user.entity.js";
 @Entity("operations")
 @Unique(["operationId"])
 export class Operations extends BaseEntity {
-  @Column({ length: 100 })
+  @Column({ name: "operation_id", length: 100 })
   operationId!: string;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: "userId", referencedColumnName: "userId" })
+  @ManyToOne(() => User, { nullable: false })
+  @JoinColumn({ name: "user_id", referencedColumnName: "userId" })
   user!: User;
 
   @RelationId((operation: Operations) => operation.user)
   userId!: string;
 
-  @ManyToOne(() => Account)
-  @JoinColumn({ name: "accountId", referencedColumnName: "accountId" })
+  @ManyToOne(() => Account, { nullable: false })
+  @JoinColumn({ name: "account_id", referencedColumnName: "accountId" })
   account!: Account;
 
   @RelationId((operation: Operations) => operation.account)
   accountId!: string;
 
-  @Column({ length: 10 })
+  @Column({ name: "operation_type", length: 10 })
   operationType!: string;
 
-  @Column({ length: 10 })
+  @Column({ name: "data_type", length: 10 })
   dataType!: string;
 
-  @Column("decimal", { precision: 20, scale: 4 })
+  @Column("decimal", {
+    name: "operating_amount",
+    precision: 20,
+    scale: 4,
+    transformer: {
+      // What goes to the DB (keep as is or stringify)
+      to: (value: number) => value,
+      // What comes out of the DB (automatically parse into a number)
+      from: (value: string) => (value ? parseFloat(value) : 0),
+    },
+  })
   operatingAmount!: number;
 
-  @Column("decimal", { precision: 3, scale: 0 })
+  @Column("decimal", {
+    name: "frequency",
+    precision: 3,
+    scale: 0,
+    transformer: {
+      // What goes to the DB (keep as is or stringify)
+      to: (value: number) => value,
+      // What comes out of the DB (automatically parse into a number)
+      from: (value: string) => (value ? parseInt(value) : 0),
+    },
+  })
   frequency!: number;
 
-  @Column({ type: "timestamptz" })
+  @Column({ name: "start_date", type: "timestamptz" })
   startDate!: Date;
 
-  @Column({ type: "timestamptz" })
+  @Column({ name: "end_date", type: "timestamptz" })
   endDate!: Date;
 
-  @Column({ length: 1 })
+  @Column({ name: "status", length: 1 })
   status!: string;
 }

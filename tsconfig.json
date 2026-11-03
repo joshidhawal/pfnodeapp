@@ -6,15 +6,17 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "rootDir": "./src/",
-    "baseUrl": "./src",
+    // "baseUrl": "./src",
     "paths": {
-      "types/*": ["types/*"],
-      "routes/*": ["routes/*"],
-      "controllers/*": ["controllers/*"],
-      "middlewares/*": ["middlewares/*"],
-      "config/*": ["config/*"]
+      "types/*": ["./src/types/*"],
+      "routes/*": ["./src/routes/*"],
+      "controllers/*": ["./src/controllers/*"],
+      "middlewares/*": ["./src/middlewares/*"],
+      "config/*": ["./src/config/*"],
+      "services/*": ["./src/services/*"]
     },
     "typeRoots": ["./types", "./node_modules/@types"],
+    "types": ["node"],
     "outDir": "./dist/",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -22,7 +24,7 @@
     "resolveJsonModule": true,
     // "allowImportingTsExtensions": true,
     // "emitDeclarationOnly": true,
-    "declaration": true,
+    // "declaration": true, // Only needed if publishing a library so that .d.ts files are generated for other's references.
     "strict": true, // Enables all strict type-checking options
     "noImplicitAny": true, // Disallow 'any' type usage without explicit annotation
     "strictNullChecks": true, // Ensure null and undefined are not assigned to non-nullable types
@@ -33,7 +35,7 @@
     "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased references to the same file
     "noUnusedLocals": true, // Report errors on unused local variables
     "noUnusedParameters": true, // Report errors on unused parameters
-    "exactOptionalPropertyTypes": true, // Require optional properties to be explicitly defined as undefined
+    // "exactOptionalPropertyTypes": true, // Require optional properties to be explicitly defined as undefined
     "noFallthroughCasesInSwitch": true, // Report errors for fallthrough cases in switch statements
     "noImplicitOverride": true, // Ensure methods overriding base class methods are explicitly marked with 'override'
     "noPropertyAccessFromIndexSignature": true, // Enforce index signatures for property access

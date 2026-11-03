@@ -1,7 +1,6 @@
 import { Logger } from "pino";
 import { Not, Repository, DeepPartial, QueryFailedError } from "typeorm";
 
-import { AppDataSource } from "../data-source.js";
 import { AppLogger } from "./logger.service.js";
 import { RecordStatus } from "../enums/enum.js";
 import { User } from "../model/user.entity.js";
@@ -15,10 +14,8 @@ import { AppError } from "../utils/error.util.js";
 
 export class UserService {
   private logger: Logger;
-  private userRepository: Repository<User>;
-  constructor() {
+  constructor(private userRepository: Repository<User>) {
     this.logger = AppLogger.getChildLogger("UserService");
-    this.userRepository = AppDataSource.getRepository(User);
   }
 
   // Had to add mapping since TS was not able to Map it to a single entity output object
@@ -48,7 +45,7 @@ export class UserService {
       return await this.userRepository.save(newUser);
     } catch (error: unknown) {
       if (error instanceof QueryFailedError) {
-        const driverErrorCode = error.driverError as string;
+        const driverErrorCode = error.driverError.code as string;
         if (driverErrorCode === "23505")
           throw new AppError("Account already exists", 409, error);
       }
@@ -98,9 +95,7 @@ export class UserService {
       const user = await this.getUserById(data.userId);
 
       // Updating User Status to Modified if New, it won't change D - Deleted Status
-      user.status == RecordStatus.NEW
-        ? (user.status = RecordStatus.MODIFIED)
-        : user.status;
+      if (user.status === RecordStatus.NEW) user.status = RecordStatus.MODIFIED;
 
       const updatedUserData = { ...user, ...data };
       this.logger.info("Updating the User");

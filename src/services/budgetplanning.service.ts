@@ -1,5 +1,11 @@
 import { Logger } from "pino";
-import { DeepPartial, Not, QueryFailedError, Repository } from "typeorm";
+import {
+  DeepPartial,
+  FindOptionsWhere,
+  Not,
+  QueryFailedError,
+  Repository,
+} from "typeorm";
 
 import { AppLogger } from "./logger.service.js";
 import { RecordStatus } from "../enums/enum.js";
@@ -7,6 +13,7 @@ import { BudgetPlanning } from "../model/budget-planning.js";
 import {
   BudgetTypes,
   DeleteAccountByIdInput,
+  deleteBudgetTypes,
   getAllBudgetsForUserTypes,
   getBudgetByIdTypes,
   updateBudgetTypes,
@@ -27,9 +34,9 @@ export class BudgetPlanningService {
       return await this.budgetPlanningRepository.save(newBudget);
     } catch (error: unknown) {
       if (error instanceof QueryFailedError) {
-        const driverErrorCode = error.driverError as string;
+        const driverErrorCode = error.driverError.code as string;
         if (driverErrorCode === "23505")
-          throw new AppError("Account already exists", 409, error);
+          throw new AppError("Budget already exists", 409, error);
       }
       throw new AppError(
         "Internal Server Error",
@@ -43,7 +50,7 @@ export class BudgetPlanningService {
     data: getAllBudgetsForUserTypes,
   ): Promise<BudgetPlanning[]> {
     try {
-      const where: any = {
+      const where: FindOptionsWhere<BudgetPlanning> = {
         status: Not(RecordStatus.DELETED),
         userId: data.userId,
       };
@@ -56,7 +63,7 @@ export class BudgetPlanningService {
     } catch (error: unknown) {
       throw new AppError(
         "Internal Server Error",
-        500,
+        error instanceof AppError ? error.statusCode : 500,
         error instanceof Error ? error : undefined,
       );
     }
@@ -110,7 +117,7 @@ export class BudgetPlanningService {
     }
   }
 
-  async deleteBudget(data: DeleteAccountByIdInput): Promise<string> {
+  async deleteBudget(data: deleteBudgetTypes): Promise<string> {
     try {
       const budgetData = await this.getBudgetById(data);
 
@@ -120,11 +127,9 @@ export class BudgetPlanningService {
 
       await this.budgetPlanningRepository.save(budgetData);
 
-      this.logger.info(
-        `BudgetPlanning : ${budgetData.budgetId} Successfully Deleted`,
-      );
+      this.logger.info(`${budgetData.budgetId} Successfully Deleted`);
 
-      return `BudgetPlanning : ${budgetData.budgetId} Successfully Deleted`;
+      return `${budgetData.budgetId} Successfully Deleted`;
     } catch (error: unknown) {
       throw new AppError(
         "Internal Server Error",
@@ -136,41 +141,54 @@ export class BudgetPlanningService {
 
   async deleteAllBudgetsForUser(data: DeleteAccountByIdInput): Promise<string> {
     try {
-      const where = {
-        userId: data.userId,
-        accountId: data.accountId,
-        status: Not(RecordStatus.DELETED),
-      };
-      const budgetCount = await this.budgetPlanningRepository.count({
-        where: where,
-      });
+      // const where = {
+      //   userId: data.userId,
+      //   accountId: data.accountId,
+      //   status: Not(RecordStatus.DELETED),
+      // };
+      // const budgetCount = await this.budgetPlanningRepository.count({
+      //   where: where,
+      // });
 
-      if (budgetCount < 1) {
-        throw new AppError("Budget Data not found", 404);
-      }
+      // if (budgetCount < 1) {
+      //   throw new AppError("Budget Data not found", 404);
+      // }
 
       // Since we are updating directly running it via a query, it doesn't apply lifecycle hooks
       // and other utilities when using save().
       // Keep this in mind.
-      await this.budgetPlanningRepository
-        .createQueryBuilder()
-        .update(BudgetPlanning)
-        .set({ status: RecordStatus.DELETED })
-        .where(where)
-        .andWhere("status <> :deletedStatus", {
-          deletedStatus: RecordStatus.DELETED,
-        })
-        .execute();
+      // =======================================================================================
+      // const result = await this.budgetPlanningRepository
+      //   .createQueryBuilder()
+      //   .update(BudgetPlanning)
+      //   .set({ status: RecordStatus.DELETED, modifiedBy: data.modifiedBy })
+      //   .where({
+      //     userId: data.userId,
+      //     accountId: data.accountId,
+      //     status: Not(RecordStatus.DELETED),
+      //   })
+      //   .execute();
+      // =======================================================================================
+      // Replacing QueryBuilder with Update command since in future this would be needed to
+      // handle the system columns i.e. createdby and modifiedby. Keeping the Query Builder
+      // =======================================================================================
 
-      this.logger.info(
-        `Budget Planning : ${result.affected} budgets Successfully Deleted`,
+      const result = await this.budgetPlanningRepository.update(
+        {
+          userId: data.userId,
+          accountId: data.accountId,
+          status: Not(RecordStatus.DELETED),
+        },
+        { status: RecordStatus.DELETED, modifiedBy: data.modifiedBy },
       );
 
-      return `Budget Planning : All Budgets deleted for ${data.userId} Successfully Deleted`;
+      this.logger.info(`${result.affected} records are successfully removed.`);
+
+      return `${result.affected} records are successfully removed.`;
     } catch (error: unknown) {
       throw new AppError(
         "Internal Server Error",
-        500,
+        error instanceof AppError ? error.statusCode : 500,
         error instanceof Error ? error : undefined,
       );
     }

@@ -4,8 +4,8 @@ import { AppDataSource } from "../data-source.js";
 import { validateRequest } from "../middlewares/validate.middleware.js";
 import { BudgetPlanning } from "../model/budget-planning.js";
 import { BudgetPlanningService } from "../services/budgetplanning.service.js";
-import { BudgetTypes } from "../types/app/types.js";
 import { catchAsync } from "../utils/catchAsync.js";
+import { generateNewID } from "../utils/generateID.js";
 import { sendResponseJSON } from "../utils/send-res.util.js";
 import {
   createBudgetSchema,
@@ -26,8 +26,9 @@ const budgetPlanningService = new BudgetPlanningService(
 
 export const createBudget = catchAsync(async (req: Request, res: Response) => {
   const budgetData = validateRequest(createBudgetSchema, {
+    budgetId: generateNewID("BD"),
     createdBy: req.user?.userId,
-    modifiedBy: req.user?.userRole,
+    modifiedBy: req.user?.userId,
     ...req.body,
   });
 
@@ -37,54 +38,59 @@ export const createBudget = catchAsync(async (req: Request, res: Response) => {
 
 export const getAllBudgetsForUser = catchAsync(
   async (req: Request, res: Response) => {
-    const budgetData = validateRequest(getAllBudgetsForUserSchema);
-    sendResponseJSON(res, 200, "");
+    const budgetQueryData = validateRequest(
+      getAllBudgetsForUserSchema,
+      req.query,
+    );
+
+    const budgetData =
+      await budgetPlanningService.getAllBudgetsForUser(budgetQueryData);
+    sendResponseJSON(res, 200, budgetData);
   },
 );
 
 export const getBudgetById = catchAsync(async (req: Request, res: Response) => {
-  const accountData = validateRequest(getBudgetByIdSchema, {
+  const budgetQueryData = validateRequest(getBudgetByIdSchema, {
     userId: req.user?.userId,
     accountId: req.params["accountId"],
   });
 
-  sendResponseJSON(res, 401, "");
+  const budgetData = await budgetPlanningService.getBudgetById(budgetQueryData);
+
+  sendResponseJSON(res, 200, budgetData);
 });
 
 export const updateBudget = catchAsync(async (req: Request, res: Response) => {
-  const budgetData = validateRequest(updateBudgetSchema, {
-    createdBy: req.user?.userId,
-    modifiedBy: req.user?.userRole,
+  const budgetQueryData = validateRequest(updateBudgetSchema, {
+    modifiedBy: req.user?.userId,
     ...req.body,
   });
 
-  const budget: BudgetTypes =
-    await bugetPlanningService.updateBudget(budgetData);
-  sendResponseJSON(res, 201, budget);
+  const budgetData = await budgetPlanningService.updateBudget(budgetQueryData);
+  sendResponseJSON(res, 201, budgetData);
 });
 
 export const deleteBudget = catchAsync(async (req: Request, res: Response) => {
   const budgetData = validateRequest(deleteBudgetSchema, {
-    createdBy: req.user?.userId,
-    modifiedBy: req.user?.userRole,
+    modifiedBy: req.user?.userId,
+    userId: req.user?.userId,
     ...req.body,
   });
 
-  const budget: BudgetTypes =
-    await bugetPlanningService.deleteBudget(budgetData);
+  const budget = await budgetPlanningService.deleteBudget(budgetData);
   sendResponseJSON(res, 201, budget);
 });
 
 export const deleteAllBudgetsForUser = catchAsync(
   async (req: Request, res: Response) => {
-    const budgetData = validateRequest(deleteAllBudgetsForUserSchema, {
-      createdBy: req.user?.userId,
-      modifiedBy: req.user?.userRole,
+    const budgetQueryData = validateRequest(deleteAllBudgetsForUserSchema, {
+      modifiedBy: req.user?.userId,
+      userId: req.user?.userId,
       ...req.body,
     });
 
-    const budget: BudgetTypes =
-      await bugetPlanningService.deleteAllBudgetsForUser(budgetData);
-    sendResponseJSON(res, 201, budget);
+    const budgetData =
+      await budgetPlanningService.deleteAllBudgetsForUser(budgetQueryData);
+    sendResponseJSON(res, 201, budgetData);
   },
 );

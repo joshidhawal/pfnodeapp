@@ -1,0 +1,110 @@
+[
+  {
+    "operationId": "OP1AC01US01",
+    "userId": "user01test",
+    "accountId": "user01test",
+    "operationType": "CREDIT",
+    "dataType": "abs",
+    "operatingAmount": 200,
+    "status": "N",
+    "createdBy": "ADMIN",
+    "modifiedBy": "ADMIN",
+    "operationDate": "2026-10-05T00:00:00.000Z"
+  },
+  {
+    "operationId": "OP2AC01US01",
+    "userId": "user01test",
+    "accountId": "user01test",
+    "operationType": "DEBIT",
+    "dataType": "abs",
+    "operatingAmount": 20,
+    "status": "N",
+    "createdBy": "ADMIN",
+    "modifiedBy": "ADMIN",
+    "operationDate": "2026-10-05T00:00:00.000Z"
+  },
+  {
+    "operationId": "OP3AC01US01",
+    "userId": "user01test",
+    "accountId": "user01test",
+    "operationType": "DEBIT",
+    "dataType": "perc",
+    "operatingAmount": 2,
+    "status": "N",
+    "createdBy": "ADMIN",
+    "modifiedBy": "ADMIN",
+    "operationDate": "2026-10-05T00:00:00.000Z"
+  },
+  {
+    "operationId": "OP4AC02US01",
+    "userId": "user01test",
+    "accountId": "user01ac1test",
+    "operationType": "CREDIT",
+    "dataType": "perc",
+    "operatingAmount": 2,
+    "status": "N",
+    "createdBy": "ADMIN",
+    "modifiedBy": "ADMIN",
+    "operationDate": "2026-01-05T00:00:00.000Z"
+  },
+  {
+    "operationId": "OP5AC02US01",
+    "userId": "user01test",
+    "accountId": "user01ac1test",
+    "operationType": "CREDIT",
+    "dataType": "abs",
+    "operatingAmount": 2000,
+    "status": "N",
+    "createdBy": "ADMIN",
+    "modifiedBy": "ADMIN",
+    "operationDate": "2025-10-05T00:00:00.000Z"
+  },
+  {
+    "operationId": "OP6AC03US01",
+    "userId": "user01test",
+    "accountId": "user01ac3test",
+    "operationType": "CREDIT",
+    "dataType": "abs",
+    "operatingAmount": 2000,
+    "status": "N",
+    "createdBy": "ADMIN",
+    "modifiedBy": "ADMIN",
+    "operationDate": "2026-01-05T00:00:00.000Z"
+  },
+  {
+    "operationId": "OP7AC03US01",
+    "userId": "user01test",
+    "accountId": "user01ac3test",
+    "operationType": "DEBIT",
+    "dataType": "perc",
+    "operatingAmount": 0.2,
+    "status": "N",
+    "createdBy": "ADMIN",
+    "modifiedBy": "ADMIN",
+    "operationDate": "2026-11-05T00:00:00.000Z"
+  },
+  {
+    "operationId": "OP8AC01US02",
+    "userId": "user02test",
+    "accountId": "user02test",
+    "operationType": "DEBIT",
+    "dataType": "perc",
+    "operatingAmount": 0.2,
+    "status": "N",
+    "createdBy": "ADMIN",
+    "modifiedBy": "ADMIN",
+    "operationDate": "2026-11-05T00:00:00.000Z"
+  },
+  {
+    "operationId": "OP6AC01US03",
+    "userId": "user03test",
+    "accountId": "user03test",
+    "operationType": "CREDIT",
+    "dataType": "abs",
+    "operatingAmount": 2000,
+    "status": "N",
+    "createdBy": "ADMIN",
+    "modifiedBy": "ADMIN",
+    "operationDate": "2026-01-05T00:00:00.000Z"
+  }
+]

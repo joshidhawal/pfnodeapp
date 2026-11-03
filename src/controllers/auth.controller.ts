@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
 
+import { AppDataSource } from "../data-source.js";
 import { UserAuthEnums } from "../enums/enum.js";
 import { validateRequest } from "../middlewares/validate.middleware.js";
+import { UserAuth } from "../model/auth.entity.js";
+import { User } from "../model/user.entity.js";
 import { AuthService } from "../services/auth.service.js";
 import { UserLoginType } from "../types/app/types.js";
 import { catchAsync } from "../utils/catchAsync.js";
@@ -11,7 +14,10 @@ import {
   signupSchema,
 } from "../validators/auth.schema.js";
 import { createUserSchema } from "../validators/user.schema.js";
-const authService = new AuthService();
+const authService = new AuthService(
+  AppDataSource.getRepository(User),
+  AppDataSource.getRepository(UserAuth),
+);
 
 export const login = catchAsync(async (req: Request, res: Response) => {
   const { userId, password }: UserLoginType = req.body;
@@ -91,7 +97,7 @@ export const changeAdminStatus = catchAsync(
   async (req: Request, res: Response) => {
     const createUserData = validateRequest(signupSchema, {
       createdBy: req.user?.userId,
-      modifiedBy: req.user?.userRole,
+      modifiedBy: req.user?.userId,
       isAdmin: UserAuthEnums.NOT_ADMIN,
       ...req.body,
     });

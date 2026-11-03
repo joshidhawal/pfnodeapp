@@ -15,7 +15,7 @@ const externalNodeModules = builtinModules.map((module) => `node:${module}`);
 
 // Read package.json dynamically
 const packageJson = JSON.parse(
-  readFileSync(path.resolve(__dirname, "package.json"), "utf-8")
+  readFileSync(path.resolve(__dirname, "package.json"), "utf-8"),
 );
 
 // Get dependencies and devDependencies from package.json
@@ -38,7 +38,7 @@ esbuild
     target: `node${nodeVersion}`, // Dynamically target the current Node version
     minify: true, // Minify the output for production
     sourcemap: true, // Generate source maps for debugging
-    target: "esnext", // For the latest ECMAScript standard
+    // target: "esnext", // For the latest ECMAScript standard
     external: externalModules, // Don't bundle Node.js core modules
     format: "esm", // Set output to ESM format
   })

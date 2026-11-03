@@ -1,0 +1,68 @@
+[
+  {
+    "accountId": "user01test",
+    "accountType": "BANK",
+    "accountSubtype": "SAVINGS",
+    "accountName": "User01AccOne",
+    "balance": "100000.00",
+    "currency": "INR",
+    "userId": "user01test",
+    "createdBy": "ADMIN",
+    "modifiedBy": "ADMIN"
+  },
+  {
+    "accountId": "user01ac1test",
+    "accountType": "BANK",
+    "accountSubtype": "SAVINGS",
+    "accountName": "User01AccTwo",
+    "balance": "10000.00",
+    "currency": "INR",
+    "userId": "user01test",
+    "createdBy": "ADMIN",
+    "modifiedBy": "ADMIN"
+  },
+  {
+    "accountId": "user02test",
+    "accountType": "BANK",
+    "accountSubtype": "SAVINGS",
+    "accountName": "User02AccOne",
+    "balance": "610000.00",
+    "currency": "INR",
+    "userId": "user02test",
+    "createdBy": "ADMIN",
+    "modifiedBy": "ADMIN"
+  },
+  {
+    "accountId": "user03test",
+    "accountType": "BANK",
+    "accountSubtype": "SAVINGS",
+    "accountName": "User03AccOne",
+    "balance": "108000.00",
+    "currency": "INR",
+    "userId": "user03test",
+    "createdBy": "ADMIN",
+    "modifiedBy": "ADMIN"
+  },
+  {
+    "accountId": "user04test",
+    "accountType": "BANK",
+    "accountSubtype": "SAVINGS",
+    "accountName": "User04AccOne",
+    "balance": "90000.00",
+    "currency": "INR",
+    "userId": "user04test",
+    "createdBy": "ADMIN",
+    "modifiedBy": "ADMIN"
+  },
+  {
+    "accountId": "user05test",
+    "accountType": "BANK",
+    "accountSubtype": "SAVINGS",
+    "accountName": "User05AccOne",
+    "balance": "910000.00",
+    "currency": "INR",
+    "userId": "user05test",
+    "createdBy": "ADMIN",
+    "modifiedBy": "ADMIN"
+  }
+]

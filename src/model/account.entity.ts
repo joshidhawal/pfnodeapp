@@ -13,31 +13,45 @@ import { User } from "./user.entity.js";
 @Entity("accounts")
 @Unique(["accountId"])
 export class Account extends BaseEntity {
-  @Column({ length: 100 })
+  @Column({ name: "account_id", length: 100 })
   accountId!: string;
 
-  @Column({ length: 10 })
+  @Column({ name: "account_type", length: 10 })
   accountType!: string;
 
-  @Column({ length: 10 })
+  @Column({ name: "account_subtype", length: 10 })
   accountSubtype!: string;
 
-  @Column({ length: 100 })
+  @Column({ name: "account_name", length: 100 })
   accountName!: string;
 
-  @Column({ length: 1 })
+  @Column({ name: "account_status", length: 1 })
   status!: string;
 
-  @Column("decimal", { precision: 20, scale: 4 })
+  @Column({
+    name: "balance",
+    type: "decimal",
+    precision: 20,
+    scale: 4,
+    transformer: {
+      // What goes to the DB (keep as is or stringify)
+      to: (value: number) => value,
+      // What comes out of the DB (automatically parse into a number)
+      from: (value: string) => (value ? parseFloat(value) : 0),
+    },
+  })
   balance!: number;
 
-  @Column({ length: 5 })
+  @Column({ name: "currency", length: 5 })
   currency!: string;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: "userId", referencedColumnName: "userId" })
+  @ManyToOne(() => User, { nullable: false })
+  @JoinColumn({ name: "user_id", referencedColumnName: "userId" })
   user!: User;
 
   @RelationId((account: Account) => account.user)
   userId!: string;
+
+  // @Column({ name: "user_id" })
+  //   userId!: string;
 }

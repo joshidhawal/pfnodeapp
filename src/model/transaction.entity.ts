@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  RelationId,
-  Unique,
-} from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, Unique } from "typeorm";
 
 import { Account } from "./account.entity.js";
 import { BaseEntity } from "./base.entity.js";
@@ -14,41 +7,71 @@ import { User } from "./user.entity.js";
 @Entity("transaction")
 @Unique(["transactionId"])
 export class Transaction extends BaseEntity {
-  @Column({ length: 100 })
+  @Column({ name: "transaction_id", length: 100 })
   transactionId!: string;
 
-  @Column({ type: "timestamptz" })
+  @Column({ name: "transaction_date", type: "timestamptz" })
   transactionDate!: Date;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: "userId", referencedColumnName: "userId" })
-  user!: User;
-
-  @RelationId((transaction: Transaction) => transaction.user)
+  @Column({ name: "user_id" })
   userId!: string;
 
-  @ManyToOne(() => Account)
-  @JoinColumn({ name: "accountId", referencedColumnName: "accountId" })
-  account!: Account;
+  @ManyToOne(() => User, { nullable: false })
+  @JoinColumn({ name: "user_id", referencedColumnName: "userId" })
+  user!: User;
 
-  @RelationId((transaction: Transaction) => transaction.account)
+  @Column({ name: "account_id" })
   accountId!: string;
 
-  @Column("decimal", { precision: 20, scale: 4 })
+  @ManyToOne(() => Account, { nullable: false })
+  @JoinColumn({ name: "account_id", referencedColumnName: "accountId" })
+  account!: Account;
+
+  @Column("decimal", {
+    name: "initial_amt",
+    precision: 20,
+    scale: 4,
+    transformer: {
+      // What goes to the DB (keep as is or stringify)
+      to: (value: number) => value,
+      // What comes out of the DB (automatically parse into a number)
+      from: (value: string) => (value ? parseFloat(value) : 0),
+    },
+  })
   initialAmount!: number;
 
-  @Column({ length: 10 })
+  @Column({ name: "operation_type", length: 10 })
   operationType!: string;
 
-  @Column({ length: 1 })
+  @Column({ name: "status", length: 1 })
   status!: string;
 
-  @Column("decimal", { precision: 20, scale: 4 })
+  @Column("decimal", {
+    name: "operating_amt",
+    precision: 20,
+    scale: 4,
+    transformer: {
+      // What goes to the DB (keep as is or stringify)
+      to: (value: number) => value,
+      // What comes out of the DB (automatically parse into a number)
+      from: (value: string) => (value ? parseFloat(value) : 0),
+    },
+  })
   operatingAmount!: number;
 
-  @Column("decimal", { precision: 20, scale: 4 })
+  @Column("decimal", {
+    name: "end_amt",
+    precision: 20,
+    scale: 4,
+    transformer: {
+      // What goes to the DB (keep as is or stringify)
+      to: (value: number) => value,
+      // What comes out of the DB (automatically parse into a number)
+      from: (value: string) => (value ? parseFloat(value) : 0),
+    },
+  })
   endAmount!: number;
 
-  @Column({ length: 10 })
+  @Column({ name: "transaction_type", length: 10 })
   transactionType!: string;
 }

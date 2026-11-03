@@ -12,9 +12,7 @@ export const createUserSchema = z.object({
   modifiedBy: z.string().nonempty("Modified By is required"),
 });
 
-export const getUserByIdSchema = z.object({
-  userId: z.string().nonempty("User ID is required"),
-});
+export const getUserByIdSchema = z.string().nonempty("User ID is required");
 
 export const updateUserByIdSchema = z.object({
   userId: z.string().nonempty("User ID is required"),

@@ -1,10 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 
+import { AppDataSource } from "../data-source.js";
+import { UserAuth } from "../model/auth.entity.js";
+import { User } from "../model/user.entity.js";
 import { AuthService } from "../services/auth.service.js";
 import { AppLogger } from "../services/logger.service.js";
 import { AppError } from "../utils/error.util.js";
 
-const authService = new AuthService();
+const authService = new AuthService(
+  AppDataSource.getRepository(User),
+  AppDataSource.getRepository(UserAuth),
+);
 const logger = AppLogger.getChildLogger("AuthMiddleware");
 
 export const requireAuth = async (

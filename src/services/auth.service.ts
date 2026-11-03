@@ -7,12 +7,12 @@ import {
   Repository,
 } from "typeorm";
 
-import config from "../config/env.js";
-import { AppDataSource } from "../data-source.js";
 import { AppLogger } from "./logger.service.js";
 import { UserService } from "./user.service.js";
+import config from "../config/env.js";
 import { RecordStatus } from "../enums/enum.js";
 import { UserAuth } from "../model/auth.entity.js";
+import { User } from "../model/user.entity.js";
 import {
   AuthTypes,
   LoginObjectTypes,
@@ -25,12 +25,14 @@ import { comparePassword, hashPassword } from "../utils/password.util.js";
 export class AuthService {
   userService: UserService;
   logger: Logger;
-  authRepository: Repository<UserAuth>;
+  // authRepository: Repository<UserAuth>;
 
-  constructor() {
+  constructor(
+    userRepository: Repository<User>,
+    private readonly authRepository: Repository<UserAuth>,
+  ) {
     this.logger = AppLogger.getChildLogger("AuthService");
-    this.userService = new UserService();
-    this.authRepository = AppDataSource.getRepository(UserAuth);
+    this.userService = new UserService(userRepository);
   }
 
   verifyToken(token: string): JwtPayload {
@@ -82,29 +84,65 @@ export class AuthService {
       }
     }
   }
+
+  // async signup(
+  //   newUserAuthData: UserLoginType,
+  //   newUserData: Partial<UserTypes>,
+  // ): Promise<string> {
+  //   try {
+  //     // Creating User Record
+  //     const newUser = await this.userService.createUser(newUserData);
+
+  //     // Creating User Authentication Record
+  //     newUserAuthData.password = await hashPassword(newUserAuthData.password);
+  //     const newUserAuthRecord = this.authRepository.create({
+  //       ...newUserAuthData,
+  //       user: newUser,
+  //     });
+  //     const newUserAuth = await this.authRepository.save(newUserAuthRecord);
+  //     this.logger.info(newUserAuth);
+  //     return `User ${newUser.firstName} ${newUser.lastName} is registered successfully`;
+  //   } catch (error: unknown) {
+  //     if (error instanceof Error && error.message) {
+  //       throw error;
+  //     } else {
+  //       throw new AppError("Internal Server Error", 500);
+  //     }
+  //   }
+  // }
+
   async signup(
     newUserAuthData: UserLoginType,
     newUserData: Partial<UserTypes>,
   ): Promise<string> {
     try {
-      // Creating User Record
-      const newUser = await this.userService.createUser(newUserData);
+      // 1. Hash the password
+      const hashedPassword = await hashPassword(newUserAuthData.password);
 
-      // Creating User Authentication Record
-      newUserAuthData.password = await hashPassword(newUserAuthData.password);
-      const newUserAuthRecord = this.authRepository.create({
+      // 2. Build the nested payload (Auth contains the User object)
+      const authRecord = this.authRepository.create({
         ...newUserAuthData,
-        user: newUser,
+        password: hashedPassword,
+        user: newUserData, // TypeORM cascades this and inserts the user first automatically
       });
-      const newUserAuth = await this.authRepository.save(newUserAuthRecord);
-      this.logger.info(newUserAuth);
-      return `User ${newUser.firstName} ${newUser.lastName} is registered successfully`;
+
+      // 3. Single save call handles both tables atomically
+      const savedAuth = await this.authRepository.save(authRecord);
+
+      this.logger.info(savedAuth);
+      return `User ${newUserData.firstName} ${newUserData.lastName} is registered successfully`;
     } catch (error: unknown) {
-      if (error instanceof Error && error.message) {
-        throw error;
-      } else {
-        throw new AppError("Internal Server Error", 500);
+      if (
+        error instanceof QueryFailedError &&
+        (error.driverError as string) === "23505"
+      ) {
+        throw new AppError("Account already exists", 409, error);
       }
+      throw new AppError(
+        "Internal Server Error",
+        500,
+        error instanceof Error ? error : undefined,
+      );
     }
   }
 

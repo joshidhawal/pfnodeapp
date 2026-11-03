@@ -24,8 +24,8 @@ export const resetPasswordSchema = authSchema.pick({
   password: true,
 });
 
-export const changeAdminStatusSchema = authSchema.pick({
-  userId: true,
-  modifiedBy: true,
-  isAdmin: true,
-});
+// export const changeAdminStatusSchema = authSchema.pick({
+//   userId: true,
+//   modifiedBy: true,
+//   isAdmin: true,
+// });

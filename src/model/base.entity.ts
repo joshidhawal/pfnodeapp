@@ -6,19 +6,31 @@ import {
 } from "typeorm";
 
 export abstract class BaseEntity {
-  @PrimaryColumn({ type: "bigint", default: () => "nextval('nextid')" }) // use bigint for large range
+  @PrimaryColumn({
+    name: "id",
+    type: "bigint",
+    default: () => "nextval('nextid')",
+  }) // use bigint for large range
   // @Generated('sequence', { sequenceName: 'nextid' }) // temporarily commenting due to typescript types error in strict environment.
   id!: string;
 
-  @CreateDateColumn({ type: "timestamp" })
+  @CreateDateColumn({
+    name: "date_created",
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP",
+  })
   dateCreated!: Date;
 
-  @UpdateDateColumn({ type: "timestamp" })
+  @UpdateDateColumn({
+    name: "date_modified",
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP",
+  })
   dateModified!: Date;
 
-  @Column({ length: 100 })
+  @Column({ name: "created_by", length: 100 })
   createdBy!: string;
 
-  @Column({ length: 100 })
+  @Column({ name: "modified_by", length: 100 })
   modifiedBy!: string;
 }

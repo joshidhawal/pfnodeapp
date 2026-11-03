@@ -1,6 +1,5 @@
 // src/data-source.ts
 import path from "path";
-
 import "reflect-metadata";
 import { fileURLToPath } from "url";
 
@@ -19,10 +18,12 @@ export const AppDataSource = new DataSource({
   password: "my_password",
   database: "pfnode",
   entities: [path.resolve(__dirname, "model", "*.{js,ts}")], // Path to your entity files
-  synchronize: true, // Use with caution in production; consider migrations
+  synchronize: process.env["NODE_ENV"] === "development", // Use with caution in production; consider migrations
   logging: true, // Set to true for SQL query logging
+  // loadEagerRelations: false, // Forces TypeORM to ignore { eager: true } globally on all find() methods
   // logging: process.env.NODE_ENV == "development" ? true : false, // Set to true for SQL query logging
-  migrations: [__dirname + "/migrations/*.{js,ts}"],
+  // migrations: [__dirname + "/migrations/*.{js,ts}"],
+  migrations: [__dirname + "/migrations/*.js"],
   subscribers: [],
   maxQueryExecutionTime: 30000,
   extra: {

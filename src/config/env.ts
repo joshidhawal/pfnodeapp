@@ -23,16 +23,16 @@ function checkIfPathExists(filePath: string) {
 
 switch (env) {
   case "production":
-    dotenv.config({ path: path.resolve(__dirname, "../../.env") });
     checkIfPathExists(path.resolve(__dirname, "../../.env"));
+    dotenv.config({ path: path.resolve(__dirname, "../../.env") });
     break;
   case "development":
-    dotenv.config({ path: path.resolve(__dirname, "../../.env.development") });
     checkIfPathExists(path.resolve(__dirname, "../../.env.development"));
+    dotenv.config({ path: path.resolve(__dirname, "../../.env.development") });
     break;
   case "staging":
-    dotenv.config({ path: path.resolve(__dirname, "../../.env.staging") });
     checkIfPathExists(path.resolve(__dirname, "../../.env.staging"));
+    dotenv.config({ path: path.resolve(__dirname, "../../.env.staging") });
     break;
   default:
     logger.error("No matching env file found");

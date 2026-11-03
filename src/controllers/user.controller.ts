@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 
+import { AppDataSource } from "../data-source.js";
 import { RecordStatus } from "../enums/enum.js";
 import { validateRequest } from "../middlewares/validate.middleware.js";
+import { User } from "../model/user.entity.js";
 import { AppLogger } from "../services/logger.service.js";
 import { UserService } from "../services/user.service.js";
 import { UserTypes } from "../types/app/types.js";
@@ -14,7 +16,8 @@ import {
   updateUserByIdSchema,
 } from "../validators/user.schema.js";
 
-const userService = new UserService();
+const userRepository = AppDataSource.getRepository(User);
+const userService = new UserService(userRepository);
 const logger = AppLogger.getChildLogger("UserController");
 
 export const createUser = catchAsync(async (req: Request, res: Response) => {
@@ -30,7 +33,7 @@ export const createUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const getUserById = catchAsync(async (req: Request, res: Response) => {
-  const { userId } = validateRequest(getUserByIdSchema, req.params);
+  const userId = validateRequest(getUserByIdSchema, req.params);
   const user = await userService.getUserById(userId);
   sendResponseJSON(res, 200, user);
 });

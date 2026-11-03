@@ -8,3 +8,11 @@ export enum RecordStatus {
   MODIFIED = "M",
   DELETED = "D",
 }
+
+export enum TransactionFrequency {
+  Daily = 1,
+  Week = 7,
+  Month = 30,
+  Quarter = 90,
+  Year = 365,
+}

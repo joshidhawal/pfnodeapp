@@ -3,11 +3,18 @@ import tseslint from "typescript-eslint";
 import prettier from "eslint-config-prettier";
 import importPlugin from "eslint-plugin-import";
 import unusedImports from "eslint-plugin-unused-imports";
+import typeormTypescriptRecommended from "eslint-plugin-typeorm-typescript/recommended";
 
 export default [
+  // Global Ignores
   {
     ignores: ["dist/**", "node_modules/**", "*.d.ts"],
   },
+
+  // TypeORM TypeScript recommended rules (Spread into the array properly)
+  ...(Array.isArray(typeormTypescriptRecommended)
+    ? typeormTypescriptRecommended
+    : [typeormTypescriptRecommended]),
 
   /* JS (build, config, scripts) */
   {
@@ -24,15 +31,18 @@ export default [
   },
 
   /* TS ONLY INSIDE SRC */
-  // ...tseslint.configs.recommended.map((config) => ({
-  //   ...config,
-  //   files: ["src/**/*.ts"],
-  // })),
+  ...tseslint.configs.recommended.map((config) => ({
+    ...config,
+    files: ["src/**/*.ts"],
+  })),
 
   {
     files: ["src/**/*.ts"],
     languageOptions: {
       parser: tseslint.parser,
+      parserOptions: {
+        project: true, // Recommended if type-checking plugins need it
+      },
     },
     plugins: {
       import: importPlugin,

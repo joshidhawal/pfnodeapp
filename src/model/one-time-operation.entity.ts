@@ -14,29 +14,45 @@ import { User } from "./user.entity.js";
 @Entity("one_time_operation")
 @Unique(["operationId"])
 export class OneTimeOperation extends BaseEntity {
-  @Column({ length: 100 })
+  @Column({ name: "operation_id", length: 100 })
   operationId!: string;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: "userId", referencedColumnName: "userId" })
+  @ManyToOne(() => User, { nullable: false })
+  @JoinColumn({ name: "user_id", referencedColumnName: "userId" })
   user!: User;
 
-  @RelationId((otp: OneTimeOperation) => otp.user)
+  @RelationId((oto: OneTimeOperation) => oto.user)
   userId!: string;
 
-  @ManyToOne(() => Account)
-  @JoinColumn({ name: "accountId", referencedColumnName: "accountId" })
+  @ManyToOne(() => Account, { nullable: false })
+  @JoinColumn({ name: "account_id", referencedColumnName: "accountId" })
   account!: Account;
 
-  @RelationId((otp: OneTimeOperation) => otp.account)
+  @RelationId((oto: OneTimeOperation) => oto.account)
   accountId!: string;
 
-  @Column({ length: 10 })
+  @Column({ name: "operation_type", length: 10 })
   operationType!: string;
 
-  @Column({ length: 10 })
+  @Column({ name: "data_type", length: 10 })
   dataType!: string;
 
-  @Column("decimal", { precision: 20, scale: 4 })
+  @Column("decimal", {
+    name: "operating_amount",
+    precision: 20,
+    scale: 4,
+    transformer: {
+      // What goes to the DB (keep as is or stringify)
+      to: (value: number) => value,
+      // What comes out of the DB (automatically parse into a number)
+      from: (value: string) => (value ? parseFloat(value) : 0),
+    },
+  })
   operatingAmount!: number;
+
+  @Column({ name: "operation_date", type: "timestamptz" })
+  operationDate!: Date;
+
+  @Column({ name: "status", length: 1 })
+  status!: string;
 }
